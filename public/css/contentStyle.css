@@ -20,13 +20,13 @@
 	flex-direction: column;
 	width: 265px;
 	padding: 10px 10px 15px 10px;
-	box-shadow: 0px 4px 20px -4px rgba(0,0,0,0.72);
-	margin: 0px 0px 10px 0px;
+	/*box-shadow: 0px 4px 20px -4px rgba(0,0,0,0.72);*/
+	margin-bottom: 10px;
 	background-color: #ffffff;
 }
 .portfolios-grid-item:hover{
 	cursor: pointer;
-	background-color: #f2ccff;
+	background-color: #fff2e8;
 }
 .portfolio-picture-wrapper{
 	width: 100%;	

@@ -4,7 +4,7 @@ let currentPicture;
 // Comment trigger
 document.addEventListener('keydown', function(event){
 	// Press enter key while input is being focused to comment
-	if (event.keyCode === 13 && input3words === document.activeElement){
+	if ((event.keyCode === 13 || event.which === 13) && input3words === document.activeElement){
 		// post comment
 		url = `/image/comment`;
 		let word = {
@@ -21,22 +21,55 @@ document.addEventListener('keydown', function(event){
 })
 
 let openPictureDim = document.getElementById('open-picture-dim');
+let commentsContainer = document.getElementById('comments-container');
+let pictureOwnersName = document.getElementById('owners-name');
 
 // Open and append picture in big size
-function openPictureByClick(portfolio, imageId){
+function openPictureByClick(portfolio, chosenUser){
 	portfolio.addEventListener('click', function(){
 		openPictureDim.style.display = "block";
 
+		//append owner's information
+		console.log(chosenUser);
+		pictureOwnersName.innerHTML = chosenUser.name;
+
 		//append picture and comments
-		url = `/image/${imageId}`;
+		url = `/image/${chosenUser.currentImageId}`;
 		$.ajax({type: 'get', url: url})
 		.done((data) => {
 			//append picture
 			currentPicture = data;
 			document.getElementById('big-instant-picture-image').src = data.url;
-			console.log(currentPicture);
-			//append comments
+			//append Comments
+			console.log(currentPicture.words);
 
+			commentsContainer.innerHTML = "";
+			for(let i = 0, n = currentPicture.words.length; i < n; i++){
+				//create comment
+				let comment = document.createElement('div');
+				comment.className = "comment";
+
+				let commentContent = document.createElement('span');
+				commentContent.className = "word";
+				commentContent.innerHTML = currentPicture.words[i].content;// append comment content 
+
+				let voteCountWrapper = document.createElement('div');
+
+				let voteIcon = document.createElement('span');
+				voteIcon.className = "fa fa-heart-o";
+
+				let voteNumber = document.createElement('span');
+				voteNumber.className = "vote-number";
+				voteNumber.innerHTML = currentPicture.words[i].vote;// append vote number
+
+				voteCountWrapper.appendChild(voteIcon);
+				voteCountWrapper.appendChild(voteNumber);
+
+				comment.appendChild(commentContent);
+				comment.appendChild(voteCountWrapper);
+
+				commentsContainer.appendChild(comment);
+			}
 		})
 	})
 }
@@ -56,7 +89,7 @@ function suspendClickOpenPictureWrapper(){
 		event.stopPropagation();
 	});
 	// suspend comment section click
-	document.querySelector(".focused-left-content").addEventListener('click', function(event){
+	document.querySelector(".right-section-wrapper").addEventListener('click', function(event){
 		event.stopPropagation();
 	});
 }

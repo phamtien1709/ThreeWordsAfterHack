@@ -52,8 +52,8 @@ function requestNextPage(){
 
 			gridPicture.src = data[i].smallURL;
 			gridPicture.onload = () => {
-				msnry.appended( gridItem);
-				openPictureByClick(gridItem, data[i].currentImageId);
+				msnry.appended(gridItem);
+				openPictureByClick(gridItem, data[i]);
 			}
 		}
 	}).fail((err) => {
