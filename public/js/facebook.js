@@ -62,6 +62,9 @@ let currentUser;
     FB.api('/me', function(userInfo) {
       console.log(userInfo);
       currentUser = userInfo;
-      $.ajax({type:"post", url: "/user/createAccount", data: userInfo});
+      $.ajax({type:"post", url: "/user/createAccount", data: userInfo})
+      .done((data) => {
+        currentUser = data;
+      })
     });
   }

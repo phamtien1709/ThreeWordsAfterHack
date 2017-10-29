@@ -13,6 +13,7 @@ Router.post('/comment', (req, res) => {
 	wordController.addWord(word)
 	.then((addedWordId) => {
 		console.log("comment added");
+		res.send(addedWordId);
 		imageController.appendWord(addedWordId, word.targetPicture)
 		.then(() => {
 			console.log("appended to picture");

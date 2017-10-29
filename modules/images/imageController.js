@@ -42,11 +42,11 @@ const getAll = () => {
 const appendWord = (addedWordId, imageId) => {
 	return new Promise(function(resolve, reject){
 		imageModel.update(
-			{ "_id": objectId(imageId) },
-			{ $push: {words: objectId(addedWordId)} }, (err) => {
-				if(err) reject(err);
-					else resolve();
-			})
+		{ "_id": objectId(imageId) },
+		{ $push: {words: objectId(addedWordId)} }, (err) => {
+			if(err) reject(err);
+				else resolve();
+		})
 	})
 }
 

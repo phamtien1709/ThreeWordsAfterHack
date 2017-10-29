@@ -3,21 +3,7 @@ const mongoose = require('mongoose');
 const objectId = mongoose.Types.ObjectId();
 
 const userModel = require('./userSchema');
-
-const getQuestionByOrder = (id, callback) => {
-	var typeQuestion = questionModel;
-	typeQuestion.findOne( {'order' : id}, (err, question) => {
-		if (err) {
-			console.log(err);
-		} else {
-			callback(question);
-		}
-	})
-}
-
-const updateQuestionById = (updatedQuestion, callback) => {
-	questionModel.update({ _id: updatedQuestion._id }, { $set: updatedQuestion}, callback);
-}
+const userLogModel = require('./userLogSchema');
 
 const checkExistAccount = (userInfo) => {
 	return new Promise( function( resolve, reject){

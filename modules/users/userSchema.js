@@ -19,6 +19,7 @@ const userSchema = new Schema({
 		type: String,
 		require: true
 	},
+	spokenWords: [{type: Schema.Types.ObjectId, ref: 'user-logs'}],
 	currentImageId:{
 		type: String,
 		require: true

@@ -128,7 +128,7 @@
 .comments-wrapper{
 	border-top: 1px solid rgba(0, 0, 0, 0.1);
 	background-color: rgba(212, 99, 232, 0.1);
-	height: 348px;
+	height: 346px;
 	overflow-y: scroll;
 }
 .write-comment-wrapper{
