@@ -10,6 +10,7 @@
 }
 .opened-picture-wrapper{
 	display: flex;
+	align-items: center;
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -129,7 +130,6 @@
 	border-top: 1px solid rgba(0, 0, 0, 0.1);
 	background-color: rgba(212, 99, 232, 0.1);
 	height: 346px;
-	overflow-y: scroll;
 }
 .write-comment-wrapper{
 	width: 100%;
@@ -172,8 +172,10 @@
 	right: 32px;
 }*/
 .display-comments-wrapper{
+	height: 301px;	
 	padding: 5px 20px;
 	color: rgba(0, 0, 0, 0.5);
+	overflow-y: scroll;
 }
 .comment{
 	display: flex;

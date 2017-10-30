@@ -8,6 +8,7 @@ const homeRouter = require('./modules/home');
 const userRouter = require('./modules/user');
 const imageRouter = require('./modules/image');
 const logRouter = require('./modules/log');
+const wordRouter = require('./modules/word');
 
 const config = require('./config.json');
 
@@ -31,6 +32,7 @@ app.use('/', homeRouter);
 app.use('/user', userRouter);
 app.use('/image', imageRouter);
 app.use('/log', logRouter);
+app.use('/word', wordRouter)
 
 app.use(express.static(__dirname + '/public'));
 

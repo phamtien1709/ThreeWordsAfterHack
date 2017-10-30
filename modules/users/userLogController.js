@@ -15,13 +15,18 @@ const getLog = (userId, imageId) => {
 	})
 }
 
-const appendWordId = (logId, addedWordId) => {
+const updateLog = (updatedLog) => {
 	return new Promise(function(resolve, reject){
-		userLogModel.update(
-		{ "_id": objectId(logId) },
-		{ $push: {threewords: objectId(addedWordId)} }, (err, data) => {
-			if(err) reject(err);
-				else resolve(data);
+		userLogModel.findOne( { "_id": updatedLog._id })
+		.exec((err, data) => {
+			data.set(updatedLog);
+			if(updatedLog.threewords === undefined){
+				data.set({threewords: []});
+			};
+			data.save((err, updatedData) =>{
+				if (err) reject(err);
+					else resolve(updatedData);
+			})
 		})
 	})
 }
@@ -41,6 +46,6 @@ const createLog = (logInfo) => {
 
 module.exports = {
 	getLog,
-	appendWordId,
+	updateLog,
 	createLog
 }

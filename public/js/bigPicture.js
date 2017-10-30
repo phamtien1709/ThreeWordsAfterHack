@@ -5,7 +5,13 @@ let currentPicture, currentLog;
 document.addEventListener('keydown', function(event){
 	// Press enter key while input is being focused to comment
 	if ((event.keyCode === 13 || event.which === 13) && input3words === document.activeElement){
-		// post comment
+		// allow only 3 words
+		if (currentLog && currentLog.threewords.length >= 3){
+			input3words.value = "";
+			alert('Exceeded 3-words')
+			return false;
+		}
+		// comment prototype
 		url = `/image/comment`;
 		let word = {
 			content: input3words.value,
@@ -14,47 +20,65 @@ document.addEventListener('keydown', function(event){
 			authorId: currentUser.id
 		}
 
-		// post and append to log 
+		// post comment
 		$.ajax({type: 'post', url: url, data: word})
-		.done((addedWordId) => {
+		.done((addedWord) => {
 			let logInfo = {
-				userId: currentUser.id,
-				imageId: currentPicture._id
+				userId : currentUser.id,
+				imageId : currentPicture._id
 			}
-			console.log(currentLog);
+
+			// append to picture
+			url = `image/append`
+			$.ajax({type: 'post', url: url, data: addedWord})
+			.done((data) => {
+				currentPicture = data;
+			});
+
+			// append to log
 			if(currentLog){
-				if(currentLog.threewords.length < 3){
-					appendToLog(currentLog._id, addedWordId);
-				}
+				pushWordToLog(addedWord);
 			} else {
 				url = `log/create`;
 				
 				$.ajax({type:'post', url: url, data: logInfo})
 				.done((data) => {
 					currentLog = data;
-					currentLog.threewords.push(addedWordId);
-					appendToLog(currentLog._id, addedWordId);
+					pushWordToLog(addedWord);
 				})
 			}
 		})
 
-		function appendToLog(logId, addedWordId){
-			url = `/log/append`;
-			data = {
-				logId: logId,
-				addedWordId: addedWordId
+		function pushWordToLog(addedWord){
+			if(currentLog.threewords.length < 3){
+				currentLog.threewords.push(addedWord._id);
+				updateLog(currentLog)
+				.then((data) => {	
+					currentLog = data;
+					// append new comment container
+					let newComment = makeNewComment(addedWord);
+					activate(newComment);
+					commentsContainer.appendChild(newComment);
+					voteWordByClick(newComment, addedWord);
+				});
 			}
-			$.ajax({type:'post', url: url, data: data})
-			.done((data) => {
-				currentLog = data;
-				console.log(currentLog);
-			})
 		}
 		
 		// reset input
 		input3words.value = "";
 	}
-})
+});
+
+function updateLog(updatedLog){
+	return new Promise(function(resolve, reject){
+		url = `/log/update`;
+
+		$.ajax({type:'post', url: url, data: updatedLog})
+		.done((data) => {
+			resolve(data);
+		})
+	})
+}
 
 let openPictureDim = document.getElementById('open-picture-dim');
 let commentsContainer = document.getElementById('comments-container');
@@ -68,8 +92,6 @@ function openPictureByClick(portfolio, chosenUser){
 		document.getElementsByTagName('body')[0].style.overflow = "hidden";// prevent body scrolling when pop up
 
 		//append owner's information
-		console.log(chosenUser);
-		console.log(currentUser);
 		pictureOwnersName.innerHTML = chosenUser.name;
 		currentUserAvatar.src = currentUser.smallURL;
 
@@ -81,38 +103,6 @@ function openPictureByClick(portfolio, chosenUser){
 			currentPicture = data;
 
 			document.getElementById('big-instant-picture-image').src = data.url;
-			//append Comments
-			console.log(currentPicture.words);
-
-			for(let i = 0, n = currentPicture.words.length; i < n; i++){
-				//create comment
-				let comment = document.createElement('div');
-				comment.className = "comment";
-
-				let commentContent = document.createElement('span');
-				commentContent.className = "word";
-				commentContent.innerHTML = currentPicture.words[i].content;// append comment content 
-
-				let voteCountWrapper = document.createElement('div');
-				voteCountWrapper.className = "vote-count-display";
-
-				let voteIcon = document.createElement('span');
-				voteIcon.className = "fa fa-heart-o";
-
-				let voteNumber = document.createElement('span');
-				voteNumber.className = "vote-number";
-				voteNumber.innerHTML = currentPicture.words[i].vote;// append vote number
-
-				voteCountWrapper.appendChild(voteIcon);
-				voteCountWrapper.appendChild(voteNumber);
-
-				comment.appendChild(commentContent);
-				comment.appendChild(voteCountWrapper);
-
-				commentsContainer.appendChild(comment);
-
-				// voteWordByClick(comment, currentPicture.words[i]);
-			}
 
 			//get user log about the picture
 			url = `/log/${currentUser.id}/${currentPicture._id}`
@@ -120,6 +110,7 @@ function openPictureByClick(portfolio, chosenUser){
 			$.ajax({type:'get', url: url})
 			.done((data) => {
 				currentLog = data;
+				appendCommentsToBigPicture();
 			})
 		})
 	})

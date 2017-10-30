@@ -17,14 +17,12 @@ Router.get('/:userId/:imageId', (req, res) => {
 	.catch((err) => console.log(err));
 })
 
-Router.post('/append', (req, res) => {
-	let addedWordId = req.body.addedWordId;
-	let logId = req.body.logId;
-	userLogController.appendWordId(logId, addedWordId)
+Router.post('/update', (req, res) => {
+	let updatedLog = req.body;
+	userLogController.updateLog(updatedLog)
 	.then((data) => {
 		res.send(data);
-		console.log(data);
-		console.log("appended to log");
+		console.log("updated log");
 	})
 	.catch((err) => {
 		console.log(err);

@@ -50,9 +50,27 @@ const appendWord = (addedWordId, imageId) => {
 	})
 }
 
+const updateImage = (updatedImage) => {
+	return new Promise(function(resolve, reject){
+		imageModel.findOne( { "_id": updatedImage._id })
+		.exec((err, data) => {
+			data.set(updatedImage);
+			if(updatedImage.words === undefined){
+				data.set({words: []});
+			};
+
+			data.save((err, updatedData) =>{
+				if (err) reject(err);
+					else resolve(updatedData);
+			})
+		})
+	})
+}
+
 module.exports = {
 	addImage,
 	getAll,
 	getById,
-	appendWord
+	appendWord,
+	updateImage
 }
