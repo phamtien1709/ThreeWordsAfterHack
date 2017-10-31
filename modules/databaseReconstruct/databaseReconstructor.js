@@ -23,12 +23,12 @@ mongoose.connect(config.connectionString, (err) => {
 
 userController.getAll()
 .then((data) => {
-	// console.log(data);
+	// fs.writeFileSync('databaseCopy.json', JSON.stringify(data));
 	for( let i = 0, n = data.length; i < n; i++){
-		let newImage = new imageModel({
+		let newImage = {
 			ownerId: data[i].id,
-			url: `https://graph.facebook.com/${data[i].id}/picture?width=300`
-		});
+			url: `https://graph.facebook.com/${data[i].id}/picture?width=600`
+		};
 		// console.log(newImage);
 		imageController.addImage(newImage)
 		.then((imageId) => {
@@ -48,11 +48,3 @@ userController.getAll()
 .catch((err) => {
 	console.log(err);
 })
-
-// imageController.getAll()
-// .then((data) => {
-// 	console.log(data);
-// })
-// .catch((err) => {
-// 	console.log(err);
-// })

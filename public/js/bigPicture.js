@@ -93,7 +93,10 @@ function openPictureByClick(portfolio, chosenUser){
 
 		//append owner's information
 		pictureOwnersName.innerHTML = chosenUser.name;
-		currentUserAvatar.src = currentUser.smallURL;
+		
+		if (currentUser){
+			currentUserAvatar.src = currentUser.smallURL;
+		}
 
 		//append picture and comments
 		url = `/image/${chosenUser.currentImageId}`;
@@ -101,17 +104,21 @@ function openPictureByClick(portfolio, chosenUser){
 		.done((data) => {
 			//append picture
 			currentPicture = data;
+			console.log(currentPicture.words);
 
 			document.getElementById('big-instant-picture-image').src = data.url;
 
 			//get user log about the picture
-			url = `/log/${currentUser.id}/${currentPicture._id}`
-			console.log(url);
-			$.ajax({type:'get', url: url})
-			.done((data) => {
-				currentLog = data;
+			if (currentUser){
+				url = `/log/${currentUser.id}/${currentPicture._id}`;
+				$.ajax({type:'get', url: url})
+				.done((data) => {
+					currentLog = data;
+					appendCommentsToBigPicture();
+				})
+			} else {
 				appendCommentsToBigPicture();
-			})
+			}
 		})
 	})
 }

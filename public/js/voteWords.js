@@ -27,14 +27,14 @@ function voteWordByClick(listeningWord, word){
 }
 
 function upvote(wordElement, word){
-	console.log("upvote");
-	console.log(word);
+	// if voter have voted that comment 
 	for(let i = 0, n = currentLog.threewords.length; i < n; i++){
 		if(word._id === currentLog.threewords[i]){
 			return;
 		}
 	}
 	if(currentLog.threewords.length < 3){
+		// push word to user log
 		currentLog.threewords.push(word._id);
 		updateLog(currentLog)
 		.then((data) => {
@@ -45,6 +45,8 @@ function upvote(wordElement, word){
 				return;
 			}
 		}
+
+		// push commenter to word
 		word.voters.push(currentUser.id);
 		word.vote = word.voters.length;
 		updateWord(word)
@@ -55,8 +57,7 @@ function upvote(wordElement, word){
 }
 
 function unvote(wordElement, word){
-	console.log("unvote");
-	console.log(word);
+	// remove word from user log
 	for(let i = 0, n = currentLog.threewords.length; i < n; i++){
 		if(word._id === currentLog.threewords[i]){
 			currentLog.threewords.splice(i, 1);
@@ -65,6 +66,8 @@ function unvote(wordElement, word){
 				currentLog = data;
 			});
 		}
+
+		// remove voter from word 
 		for(let i = 0, n = word.voters.length; i < n; i++){
 			if(word.voters[i] === currentUser.id){
 				word.voters.splice(i, 1);
@@ -74,23 +77,19 @@ function unvote(wordElement, word){
 					word = data;
 					if (word.vote === 0) {
 						// wordElement.style.display = "none";
-						removeWord(word);
-					} else {
-						wordElement.querySelector(".vote-number").innerHTML = word.vote;
-					}
+						removeWordFromImage(word);
+					} 
+					wordElement.querySelector(".vote-number").innerHTML = word.vote;
 				})				
 			}
 		}
 	}
 }
 
-function removeWord(word){
+function removeWordFromImage(word){
 	for(let i = 0, n = currentPicture.words.length; i < n; i++){
-		// console.log(word._id);
-		// console.log(currentPicture.words[i]._id);
 		if(word._id == currentPicture.words[i]._id){
 			currentPicture.words.splice(i, 1);
-			console.log(currentPicture);
 			updateImage(currentPicture)
 			.then((data) => {
 				currentPicture = data;

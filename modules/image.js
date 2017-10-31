@@ -36,7 +36,6 @@ Router.post('/append', (req, res) => {
 
 Router.post('/update', (req, res) => {
 	let updatedImage = req.body;
-	console.log(updatedImage);
 	imageController.updateImage(updatedImage)
 	.then((data) => {
 		res.send(data);
