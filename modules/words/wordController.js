@@ -38,7 +38,46 @@ const updateWord = (updatedWord) => {
 	})
 }
 
+const updateVote = (inputData) => {
+	return new Promise(function(resolve, reject){
+		wordModel.findOne( { "_id": objectId(inputData._id) })
+		.exec((err, data) => {
+			// append voter
+			let word = data;
+			for(let i = 0, m = inputData.voters.length; i < m; i++){
+				let alreadyHave = false;
+				for(let j = 0, n = word.voters.length; j < n; j++){
+					if(inputData.voters[i] == word.voters[j]){
+						alreadyHave = true;
+						break;
+					}
+				}
+				if(!alreadyHave){
+					word.voters.push(inputData.voters[i]);
+					word.vote++;
+				}
+			}
+			// remove unvoter
+			for(let i = 0, m = inputData.unvoters.length; i < m; i++){
+				for(let j = 0, n = word.voters.length; j < n; j++){
+					if(inputData.unvoters[i] == word.voters[j]){
+						word.voters.splice(j, 1);
+						break;
+					}
+				}
+			}
+			
+			data.set(word);
+			data.save((err, updatedData) =>{
+				if (err) reject(err);
+					else resolve(updatedData);
+			})
+		})
+	})
+}
+
 module.exports = {
 	addWord,
-	updateWord
+	updateWord,
+	updateVote
 }

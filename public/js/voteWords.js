@@ -12,110 +12,36 @@ function deactivate(wordElement){
 
 function voteWordByClick(listeningWord, word){
 	listeningWord.addEventListener('click', function(){
-		if(!listeningWord.active){
-			if(currentLog.threewords.length < 3){
-				upvote(listeningWord, word);
+		// console.log(loading);
+		if(!loading){
+			if(!listeningWord.active){
+				vote(listeningWord, word, 1);
 				activate(listeningWord);
 			} else {
-				alert("out of words :)");
+				vote(listeningWord, word, -1);
+				deactivate(listeningWord);
 			}
 		} else {
-			unvote(listeningWord, word);
-			deactivate(listeningWord);
+			console.log(loading);
+			console.log("haha");
 		}
 	});
 }
 
-function upvote(wordElement, word){
-	// if voter have voted that comment 
-	for(let i = 0, n = currentLog.threewords.length; i < n; i++){
-		if(word._id === currentLog.threewords[i]){
-			return;
-		}
+function vote(wordElement, word, state){
+	url = `word/vote`;
+	data = {
+		wordId: word._id,
+		voterId: currentUser.id,
+		voterChoice: state
 	}
-	if(currentLog.threewords.length < 3){
-		// push word to user log
-		currentLog.threewords.push(word._id);
-		updateLog(currentLog)
-		.then((data) => {
-			currentLog = data;
-		});
-		for(let i = 0, n = word.voters.length; i < n; i++){
-			if(word.voters[i] === currentUser.id){
-				return;
-			}
-		}
-
-		// push commenter to word
-		word.voters.push(currentUser.id);
-		word.vote = word.voters.length;
-		updateWord(word)
-		.then((updatedWord) => {
-			wordElement.querySelector(".vote-number").innerHTML = updatedWord.vote;
-		})
-	}
-}
-
-function unvote(wordElement, word){
-	// remove word from user log
-	for(let i = 0, n = currentLog.threewords.length; i < n; i++){
-		if(word._id === currentLog.threewords[i]){
-			currentLog.threewords.splice(i, 1);
-			updateLog(currentLog)
-			.then((data) => {
-				currentLog = data;
-			});
-		}
-
-		// remove voter from word 
-		for(let i = 0, n = word.voters.length; i < n; i++){
-			if(word.voters[i] === currentUser.id){
-				word.voters.splice(i, 1);
-				word.vote = word.voters.length;
-				updateWord(word)
-				.then((data) => {
-					word = data;
-					if (word.vote === 0) {
-						// wordElement.style.display = "none";
-						removeWordFromImage(word);
-					} 
-					wordElement.querySelector(".vote-number").innerHTML = word.vote;
-				})				
-			}
-		}
-	}
-}
-
-function removeWordFromImage(word){
-	for(let i = 0, n = currentPicture.words.length; i < n; i++){
-		if(word._id == currentPicture.words[i]._id){
-			currentPicture.words.splice(i, 1);
-			updateImage(currentPicture)
-			.then((data) => {
-				currentPicture = data;
-			});
-			break;
-		}
-	}
-}
-
-function updateImage(updatedImage){
-	return new Promise(function(resolve, reject){
-		url = `/image/update`;
-		$.ajax({type: 'post', url: url, data: updatedImage})
-		.done((data) => {
-			resolve(data);
-		});
+	
+	loading = true;
+	$.ajax({type: 'post', url: url, data: data})
+	.done((data) => {
+		loading = false;
 	})
+	.fail(() => {
+		loading = false;
+	});
 }
-
-function updateWord(updatedWord){
-	return new Promise(function(resolve, reject){
-		url = `/word/update`;
-		$.ajax({type: 'post', url: url, data: updatedWord})
-		.done((data) => {
-			resolve(data);
-		});
-	})
-}
-
