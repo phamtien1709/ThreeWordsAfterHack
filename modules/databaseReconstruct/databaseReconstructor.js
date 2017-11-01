@@ -21,30 +21,52 @@ mongoose.connect(config.connectionString, (err) => {
 	}
 });
 
-userController.getAll()
-.then((data) => {
-	// fs.writeFileSync('databaseCopy.json', JSON.stringify(data));
-	for( let i = 0, n = data.length; i < n; i++){
-		let newImage = {
-			ownerId: data[i].id,
-			url: `https://graph.facebook.com/${data[i].id}/picture?width=600`
-		};
-		// console.log(newImage);
-		imageController.addImage(newImage)
-		.then((imageId) => {
-			data[i].currentImageId = objectId(imageId);
-			data[i].smallUrl = `https://graph.facebook.com/${data[i].id}/picture?width=300`;
-			console.log(data[i].currentImageId)
-			userController.updateAccount(data[i])
-			.then(() => {
-				console.log("added image and updated user account")
-			})
+let data = JSON.parse(fs.readFileSync('databaseCopy.json','utf-8'));
+for( let i = 0, n = data.length; i < n; i++){
+	let newImage = {
+		ownerId: data[i].id,
+		url: `https://graph.facebook.com/${data[i].id}/picture?width=600`
+	};
+	// console.log(newImage);
+	imageController.addImage(newImage)
+	.then((imageId) => {
+		data[i].currentImageId = objectId(imageId);
+		data[i].smallUrl = `https://graph.facebook.com/${data[i].id}/picture?width=300`;
+		console.log(data[i].currentImageId)
+		userController.createNewAccount(data[i], imageId)
+		.then(() => {
+			console.log("added image and updated user account")
 		})
-		.catch((err) => {
-			console.log(err);
-		})
-	}
-})
-.catch((err) => {
-	console.log(err);
-})
+	})
+	.catch((err) => {
+		console.log(err);
+	})
+}
+
+// userController.getAll()
+// .then((data) => {
+// 	// fs.writeFileSync('databaseCopy.json', JSON.stringify(data));
+// 	for( let i = 0, n = data.length; i < n; i++){
+// 		let newImage = {
+// 			ownerId: data[i].id,
+// 			url: `https://graph.facebook.com/${data[i].id}/picture?width=600`
+// 		};
+// 		// console.log(newImage);
+// 		imageController.addImage(newImage)
+// 		.then((imageId) => {
+// 			data[i].currentImageId = objectId(imageId);
+// 			data[i].smallUrl = `https://graph.facebook.com/${data[i].id}/picture?width=300`;
+// 			console.log(data[i].currentImageId)
+// 			userController.updateAccount(data[i])
+// 			.then(() => {
+// 				console.log("added image and updated user account")
+// 			})
+// 		})
+// 		.catch((err) => {
+// 			console.log(err);
+// 		})
+// 	}
+// })
+// .catch((err) => {
+// 	console.log(err);
+// })

@@ -6,7 +6,7 @@ document.addEventListener('keydown', function(event){
 	// Press enter key while input is being focused to comment
 	if ((event.keyCode === 13 || event.which === 13) && input3words === document.activeElement){
 		// allow only 3 words
-		if (currentLog && currentLog.threewords.length >= 3){
+ 		if (currentLog && currentLog.threewords.length >= 3){
 			input3words.value = "";
 			alert('Exceeded 3-words')
 			return false;

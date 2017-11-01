@@ -16,10 +16,8 @@ function voteWordByClick(listeningWord, word){
 		if(!loading){
 			if(!listeningWord.active){
 				vote(listeningWord, word, 1);
-				activate(listeningWord);
 			} else {
 				vote(listeningWord, word, -1);
-				deactivate(listeningWord);
 			}
 		} else {
 			console.log(loading);
@@ -40,6 +38,11 @@ function vote(wordElement, word, state){
 	$.ajax({type: 'post', url: url, data: data})
 	.done((data) => {
 		loading = false;
+		if(!wordElement.active){
+			activate(wordElement);
+		} else {
+			deactivate(wordElement);
+		}
 	})
 	.fail(() => {
 		loading = false;

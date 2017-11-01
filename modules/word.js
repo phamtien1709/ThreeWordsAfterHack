@@ -21,7 +21,10 @@ Router.post('/vote', (req, res) => {
 	let data = req.body;
 	// wordId, voterId, voteChoice
 
-	let processing = JSON.parse(fs.readFileSync('processingData.json','utf-8'));
+	let processing = [];
+	if (fs.readFileSync('processingData.json','utf-8')){
+		processing = JSON.parse(fs.readFileSync('processingData.json','utf-8'));
+	}
 	let have = false;
 	console.log(data.voterChoice);
 	for( let i = 0, n = processing.length; i < n; i++){
@@ -70,28 +73,35 @@ Router.post('/vote', (req, res) => {
 	if(!have){
 		processing.push({
 			id: data.wordId,
-			voters: data.voterChoice === 1 ? [voterId] : [],
-			unvoters: data.voterChoice === -1 ? [voterId] : []
+			voters: data.voterChoice == 1 ? [data.voterId] : [],
+			unvoters: data.voterChoice == -1 ? [data.voterId] : []
 		})
 	}
 	fs.writeFileSync('processingData.json', JSON.stringify(processing));
 	res.send(processing);
+	refreshVote();
 })
 
 function refreshVote(){
 	let processing = JSON.parse(fs.readFileSync('processingData.json','utf-8'));
-	fs.writeFileSync('processingData.json',JSON.stringify(new Array(0)));
+	console.log("on refreshVote");
+	fs.writeFileSync('processingData.json', JSON.stringify(new Array(0)));
 	let loading = [];
 	let countLoading = processing.length;
 	for(let i = 0, n = processing.length; i < n; i++){
 		loading.push(true);
 		wordController.updateVote(processing[i])
-		.then(() => {
-			loading[i] = true;
-			countLoading--;
-			if(countLoading == 0){
-				// refreshVote();
-			}
+		.then((updatedWord) => {
+			console.log("word updated");
+			console.log(updatedWord);
+			// loading[i] = true;
+			// countLoading--;
+			// if(countLoading == 0){
+			// 	// refreshVote();
+			// }
+		})
+		.catch((err) => {
+			console.log(err);
 		})
 	}
 }
